@@ -1,0 +1,26 @@
+{
+  "name": "shareddict-vnr-to-yagt",
+  "version": "1.0.0",
+  "description": "Convert VNR shared dict to Yagt format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yagt/shareddict-vnr-to-yagt.git"
+  },
+  "keywords": [
+    "vnr",
+    "yagt"
+  ],
+  "author": "tinyAdapter",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yagt/shareddict-vnr-to-yagt/issues"
+  },
+  "homepage": "https://github.com/Yagt/shareddict-vnr-to-yagt#readme",
+  "dependencies": {
+    "xml2js": "^0.4.19"
+  }
+}
