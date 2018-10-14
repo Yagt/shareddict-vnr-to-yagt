@@ -147,43 +147,40 @@ function VnrToYagtFormat(object) {
   let tempFormat = { terms: {} };
   let yagtFormat = { terms: [] };
   for (let i in vnrFormat) {
+    if (
+      !vnrFormat[i].sourceLanguage === "ja" ||
+      !vnrFormat[i].$.type === "trans" ||
+      !vnrFormat[i].text ||
+      !vnrFormat[i].pattern ||
+      !isNaN(vnrFormat[i].pattern) ||
+      !(vnrFormat[i].pattern.length > 1)
+    )
+      continue; // Ignore not translation terms
     if (tempFormat.terms[vnrFormat[i].pattern]) {
-      if (
-        tempFormat.terms[vnrFormat[i].pattern].sourceLanguage ===
-        vnrFormat[i].sourceLanguage
-      ) {
-      } else if (
-        tempFormat.terms[vnrFormat[i].pattern].multipleSourceLanguages
-      ) {
+      // Already has this pattern
+      let existedTerm = tempFormat.terms[vnrFormat[i].pattern];
+      if (existedTerm.sourceLanguage === vnrFormat[i].sourceLanguage) {
+        // Same source language, do nothing
+      } else if (existedTerm.multipleSourceLanguages) {
+        // Already has multiple source languages
         if (
-          !tempFormat.terms[vnrFormat[i].pattern].sourceLanguages.includes(
-            vnrFormat[i].sourceLanguage
-          )
+          !existedTerm.sourceLanguages.includes(vnrFormat[i].sourceLanguage)
         ) {
-          tempFormat.terms[vnrFormat[i].pattern].sourceLanguages.push(
-            vnrFormat[i].sourceLanguage
-          );
+          existedTerm.sourceLanguages.push(vnrFormat[i].sourceLanguage);
         }
       } else {
-        tempFormat.terms[vnrFormat[i].pattern][
-          "multipleSourceLanguages"
-        ] = true;
-        tempFormat.terms[vnrFormat[i].pattern]["sourceLanguages"] = [];
-        tempFormat.terms[vnrFormat[i].pattern].sourceLanguages.push(
-          tempFormat.terms[vnrFormat[i].pattern].sourceLanguage
-        );
-        tempFormat.terms[vnrFormat[i].pattern].sourceLanguages.push(
-          vnrFormat[i].sourceLanguage
-        );
-        delete tempFormat.terms[vnrFormat[i].pattern].sourceLanguage;
+        // First time to have multiple source languages
+        existedTerm["multipleSourceLanguages"] = true;
+        existedTerm["sourceLanguages"] = [];
+        existedTerm.sourceLanguages.push(existedTerm.sourceLanguage);
+        existedTerm.sourceLanguages.push(vnrFormat[i].sourceLanguage);
+        delete existedTerm.sourceLanguage;
       }
-      tempFormat.terms[vnrFormat[i].pattern][vnrFormat[i].language] =
-        vnrFormat[i].text;
+      existedTerm[vnrFormat[i].language] = vnrFormat[i].text;
       continue;
     }
 
     let oneTerm = {};
-    oneTerm["type"] = vnrFormat[i].$.type;
     oneTerm["sourceLanguage"] = vnrFormat[i].sourceLanguage;
     oneTerm[vnrFormat[i].language] = vnrFormat[i].text;
     if (vnrFormat[i].comment) {
@@ -196,10 +193,13 @@ function VnrToYagtFormat(object) {
       tempFormat.terms[vnrFormat[i].pattern] = oneTerm;
     }
   }
+
+  // Convert dict to array
   for (let key in tempFormat.terms) {
     tempFormat.terms[key];
     yagtFormat.terms.push({ pattern: key, ...tempFormat.terms[key] });
   }
+
   return yagtFormat;
 }
 
