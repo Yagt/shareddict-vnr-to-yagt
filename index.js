@@ -144,8 +144,7 @@ function saveUserDict(object, path) {
  */
 function VnrToYagtFormat(object) {
   let vnrFormat = object.grimoire.terms.term;
-  let tempFormat = { terms: {} };
-  let yagtFormat = { terms: [] };
+  let yagtFormat = { terms: {} };
   for (let i in vnrFormat) {
     if (
       !vnrFormat[i].sourceLanguage === "ja" ||
@@ -156,9 +155,9 @@ function VnrToYagtFormat(object) {
       !(vnrFormat[i].pattern.length > 1)
     )
       continue; // Ignore not translation terms
-    if (tempFormat.terms[vnrFormat[i].pattern]) {
+    if (yagtFormat.terms[vnrFormat[i].pattern]) {
       // Already has this pattern
-      let existedTerm = tempFormat.terms[vnrFormat[i].pattern];
+      let existedTerm = yagtFormat.terms[vnrFormat[i].pattern];
       if (existedTerm.sourceLanguage === vnrFormat[i].sourceLanguage) {
         // Same source language, do nothing
       } else if (existedTerm.multipleSourceLanguages) {
@@ -188,16 +187,10 @@ function VnrToYagtFormat(object) {
     }
 
     if (vnrFormat[i]["regex"] === "true") {
-      tempFormat.terms[`/${vnrFormat[i].pattern}/`] = oneTerm;
+      yagtFormat.terms[`/${vnrFormat[i].pattern}/`] = oneTerm;
     } else {
-      tempFormat.terms[vnrFormat[i].pattern] = oneTerm;
+      yagtFormat.terms[vnrFormat[i].pattern] = oneTerm;
     }
-  }
-
-  // Convert dict to array
-  for (let key in tempFormat.terms) {
-    tempFormat.terms[key];
-    yagtFormat.terms.push({ pattern: key, ...tempFormat.terms[key] });
   }
 
   return yagtFormat;
